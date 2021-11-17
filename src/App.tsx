@@ -8,6 +8,29 @@ import { IState } from './redux/reducers';
 import { getChars, getCharsByNameAndPage } from './services/chars';
 import { getEps, getEpsByNameAndPage } from './services/eps';
 
+const TabPanel: React.FC<{
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}> = (props) => {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role='tabpanel'
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+};
+
 const App: React.FC = () => {
   const { epsCards, charsCards, page, tab, loading, query } = useSelector(
     (state: IState) => state
@@ -53,76 +76,74 @@ const App: React.FC = () => {
           <img src='https://media2.giphy.com/media/e6tJpLvjY8jXa/giphy.gif?cid=790b76117c554a99bb3e285cb28e9b6835f1a342a6aba19c&rid=giphy.gif&ct=g' />
         </Backdrop>
       )}
+      <Box
+        sx={{
+          height: 350,
+          justifyContent: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          p: 1,
+          backgroundColor: 'black',
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: '5vmax',
+          }}
+          color='white'
+        >
+          Rick and Morty stats & info
+        </Typography>
+      </Box>
       <Container
-        maxWidth='lg'
-        style={{
-          backgroundColor: 'rgb(255,255,255,0.8)',
+        maxWidth='xl'
+        sx={{
+          position: 'sticky',
+          top: 0,
+          width: '100%',
+          left: 0,
+          zIndex: 1000,
+          backgroundColor: 'white',
         }}
       >
         <Box
           sx={{
-            height: 250,
-            justifyContent: 'center',
-            display: 'flex',
-            alignItems: 'center',
-            padding: 1,
+            mt: 2,
           }}
         >
-          <Box>
-            <img
-              style={{
-                paddingTop: 5,
-                paddingRight: 20,
-                width: 350,
-              }}
-              src='https://giffiles.alphacoders.com/118/118768.gif'
-            />
-          </Box>
-          <Box>
-            <Typography variant='h2' color='black'>
-              Rick and Morty stats
-            </Typography>
-          </Box>
+          <SearchBar />
         </Box>
-        <Container maxWidth='md'>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              mb: 2,
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            mt: 2,
+          }}
+        >
+          <Tabs
+            value={tab}
+            onChange={(_, newValue: number) => {
+              if (newValue === 0) {
+                dispatcher({ type: 'updateTab', payload: 0 });
+              } else {
+                dispatcher({ type: 'updateTab', payload: 1 });
+              }
+
+              dispatcher({ type: 'updatePage', payload: 1 });
             }}
           >
-            <Tabs>
-              <Tab
-                onClick={() => {
-                  dispatcher({ type: 'updateTab', payload: 0 });
-                  dispatcher({ type: 'updatePage', payload: 1 });
-                }}
-                sx={{
-                  backgroundColor: `${tab === 0 && '#B0E7E8'}`,
-                  mx: 1,
-                }}
-                value={0}
-                label='Personagens'
-              />
-              <Tab
-                onClick={() => {
-                  dispatcher({ type: 'updateTab', payload: 1 });
-                  dispatcher({ type: 'updatePage', payload: 1 });
-                }}
-                sx={{
-                  backgroundColor: `${tab === 1 && '#FFF874'}`,
-                  mx: 1,
-                }}
-                value={1}
-                label='Episódios'
-              />
-            </Tabs>
-          </Box>
-          <SearchBar />
-          {tab == 0 && <InfoList cards={charsCards} />}
-          {tab == 1 && <InfoList cards={epsCards} />}
-        </Container>
+            <Tab color='white' value={0} label='Personagens' />
+            <Tab value={1} label='Episódios' />
+          </Tabs>
+        </Box>
+      </Container>
+      <Container maxWidth='xl'>
+        <TabPanel index={0} value={tab}>
+          <InfoList cards={charsCards} />
+        </TabPanel>
+        <TabPanel index={1} value={tab}>
+          <InfoList cards={epsCards} />
+        </TabPanel>
       </Container>
     </>
   );

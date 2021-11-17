@@ -1,9 +1,10 @@
 import gql from 'graphql-tag';
+import { CharsCards } from '../types';
 import api from './api';
 
 export const getChars = async (page: number) => {
   return await api
-    .query({
+    .query<CharsCards>({
       query: gql`
         query {
           characters(page: ${page}) {
@@ -16,7 +17,7 @@ export const getChars = async (page: number) => {
             results {
               name
               image
-              location {
+              origin {
                 name
               }
               episode {
@@ -33,7 +34,7 @@ export const getChars = async (page: number) => {
 
 export const getCharsByName = async (name: string) => {
   return await api
-    .query({
+    .query<CharsCards>({
       query: gql`
           query {
             characters(filter: {name: "${name}"}) {
@@ -46,7 +47,7 @@ export const getCharsByName = async (name: string) => {
               results {
                 name
                 image
-                location {
+                origin {
                   name
                 }
                 episode {
@@ -63,7 +64,7 @@ export const getCharsByName = async (name: string) => {
 
 export const getCharsByNameAndPage = async (name: string, page: number) => {
   return await api
-    .query({
+    .query<CharsCards>({
       query: gql`
           query {
             characters(page: ${page}, filter: {name: "${name}"}) {
@@ -76,7 +77,7 @@ export const getCharsByNameAndPage = async (name: string, page: number) => {
               results {
                 name
                 image
-                location {
+                origin {
                   name
                 }
                 episode {

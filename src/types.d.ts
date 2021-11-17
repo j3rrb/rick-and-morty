@@ -1,17 +1,22 @@
 export type Character = {
   name: string;
-  location: {
+  origin: {
     name: string;
   };
   image: string;
-  episode: Episode[];
+  episode: {
+    episode: string;
+    name: string;
+  }[];
 };
 
 export type Episode = {
   name: string;
   episode: string;
   air_date: string;
-  characters: Character[];
+  characters: {
+    name: string;
+  }[];
 };
 
 export type InfoCardType = {
@@ -19,7 +24,34 @@ export type InfoCardType = {
   image?: string;
   description: {
     label: string;
-    value: any;
+    value: string;
   }[];
-  details: any[];
+  details: {
+    label: string;
+    value: Character['episode'][] | Episode['characters'][];
+  }[];
+};
+
+export type CharsCards = {
+  characters: {
+    info: {
+      count: number;
+      pages: number;
+      next: number | null;
+      prev: number | null;
+    };
+    results: Character[];
+  };
+};
+
+export type EpsCards = {
+  episodes: {
+    info: {
+      count: number;
+      pages: number;
+      next: number | null;
+      prev: number | null;
+    };
+    results: Episode[];
+  };
 };

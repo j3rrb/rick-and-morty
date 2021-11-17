@@ -9,6 +9,7 @@ import {
 import {
   ArrowDownward,
   ArrowUpward,
+  Close,
   FilterList,
   SearchOutlined,
 } from '@material-ui/icons';
@@ -21,7 +22,9 @@ import { getCharsByName } from '../services/chars';
 import { getEpsByName } from '../services/eps';
 
 const SearchBar: React.FC = () => {
-  const { tab, charsCards, epsCards } = useSelector((state: IState) => state);
+  const { tab, charsCards, epsCards, query } = useSelector(
+    (state: IState) => state
+  );
   const [menu, setMenu] = useState<null | HTMLElement>(null);
   const { handleSubmit, setValue, register } = useForm();
   const dispatcher = useDispatch();
@@ -100,6 +103,7 @@ const SearchBar: React.FC = () => {
       dispatcher({ type: 'updateEpsCards', payload: epsCards || {} });
     }
 
+    dispatcher({ type: 'updatePage', payload: 1 });
     dispatcher({ type: 'updateIsLoading', payload: false });
   };
 
@@ -122,7 +126,7 @@ const SearchBar: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Box display='flex'>
+      <Box display='flex' pt={2} px={3}>
         <CustomTextField
           {...register('query')}
           variant='outlined'
@@ -131,9 +135,23 @@ const SearchBar: React.FC = () => {
           InputProps={{
             endAdornment: (
               <InputAdornment position='start'>
-                <IconButton title='Buscar' type='submit'>
-                  <SearchOutlined />
-                </IconButton>
+                <Box>
+                  <IconButton title='Buscar' type='submit'>
+                    <SearchOutlined />
+                  </IconButton>
+                  {query && (
+                    <IconButton
+                      title='Limpar'
+                      type='submit'
+                      onClick={() => {
+                        dispatcher({ type: 'updateQuery', payload: '' });
+                        setValue('query', '');
+                      }}
+                    >
+                      <Close />
+                    </IconButton>
+                  )}
+                </Box>
               </InputAdornment>
             ),
           }}
