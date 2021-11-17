@@ -14,19 +14,19 @@ export interface IState {
 export const INITIAL_STATE: IState = {
   epsCards: {
     info: {
-      count: 1,
-      next: 2,
-      pages: 1,
-      prev: null,
+      count: undefined,
+      next: undefined,
+      pages: undefined,
+      prev: undefined,
     },
     results: [],
   },
   charsCards: {
     info: {
-      count: 1,
-      next: 2,
-      pages: 1,
-      prev: null,
+      count: undefined,
+      next: undefined,
+      pages: undefined,
+      prev: undefined,
     },
     results: [],
   },

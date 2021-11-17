@@ -13,15 +13,10 @@ const TabPanel: React.FC<{
   index: number;
   value: number;
 }> = (props) => {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, ...rest } = props;
 
   return (
-    <div
-      role='tabpanel'
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      {...other}
-    >
+    <div role='tabpanel' hidden={value !== index} {...rest}>
       {value === index && (
         <Box sx={{ p: 3 }}>
           <Typography>{children}</Typography>
@@ -42,23 +37,19 @@ const App: React.FC = () => {
       dispatcher({ type: 'updateIsLoading', payload: true });
 
       if (tab == 0) {
-        if (query) {
-          const charsCards = (await getCharsByNameAndPage(query, page))?.data
-            .characters;
-          dispatcher({ type: 'updateCharsCards', payload: charsCards });
-        } else {
-          const charsCards = (await getChars(page))?.data.characters;
-          dispatcher({ type: 'updateCharsCards', payload: charsCards });
-        }
+        const charsCards = (
+          query
+            ? await getCharsByNameAndPage(query, page)
+            : await getChars(page)
+        )?.data.characters;
+
+        dispatcher({ type: 'updateCharsCards', payload: charsCards });
       } else {
-        if (query) {
-          const epsCards = (await getEpsByNameAndPage(query, page))?.data
-            .episodes;
-          dispatcher({ type: 'updateEpsCards', payload: epsCards });
-        } else {
-          const epsCards = (await getEps(page))?.data.episodes;
-          dispatcher({ type: 'updateEpsCards', payload: epsCards });
-        }
+        const epsCards = (
+          query ? await getEpsByNameAndPage(query, page) : await getEps(page)
+        )?.data.episodes;
+
+        dispatcher({ type: 'updateEpsCards', payload: epsCards });
       }
 
       dispatcher({ type: 'updateIsLoading', payload: false });

@@ -35,10 +35,10 @@ export type InfoCardType = {
 export type CharsCards = {
   characters: {
     info: {
-      count: number;
-      pages: number;
-      next: number | null;
-      prev: number | null;
+      count?: number;
+      pages?: number;
+      next?: number;
+      prev?: number;
     };
     results: Character[];
   };
@@ -47,10 +47,10 @@ export type CharsCards = {
 export type EpsCards = {
   episodes: {
     info: {
-      count: number;
-      pages: number;
-      next: number | null;
-      prev: number | null;
+      count?: number;
+      pages?: number;
+      next?: number;
+      prev?: number;
     };
     results: Episode[];
   };

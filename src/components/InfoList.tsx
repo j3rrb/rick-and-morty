@@ -21,7 +21,7 @@ const InfoList: React.FC<{
   const dispatcher = useDispatch();
 
   useEffect(() => {
-    window.scrollTo(0, 10);
+    window.scrollTo(0, 0);
   });
 
   return (
