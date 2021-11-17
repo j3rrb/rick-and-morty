@@ -1,8 +1,6 @@
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  Collapse,
+  Backdrop,
+  Grid,
   List,
   ListItem,
   ListItemText,
@@ -14,29 +12,48 @@ import { useSelector } from 'react-redux';
 import { IState } from '../redux/reducers';
 import { InfoCardType } from '../types';
 
-interface ICollapse {
+const ModalDetails: React.FC<{
   title: string;
   open: boolean;
-}
-
-const CollapseDetails: React.FC<ICollapse> = ({ title, children, open }) => {
+  setOpen: Function;
+}> = ({ title, open, setOpen, children }) => {
   return (
-    <Collapse in={open}>
-      <Box display='flex' justifyContent='center'>
-        <Typography variant='h4'>{title}</Typography>
-      </Box>
-      <List
+    <Backdrop
+      open={open}
+      onClick={() => setOpen(false)}
+      sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1, px: 2 }}
+    >
+      <Box
         sx={{
-          width: '100%',
-          overflow: 'auto',
-          maxHeight: 300,
-          maxWidth: '98%',
-          mb: 2,
+          backgroundColor: 'white',
+          color: 'black',
+          minWidth: 300,
+          borderRadius: 5,
         }}
       >
-        {children}
-      </List>
-    </Collapse>
+        <Box display='flex' justifyContent='center'>
+          <Typography variant='h4' sx={{ paddingTop: 5 }}>
+            {title}
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            padding: 2,
+          }}
+        >
+          <List
+            sx={{
+              width: '100%',
+              overflow: 'auto',
+              maxHeight: 300,
+              mb: 2,
+            }}
+          >
+            {children}
+          </List>
+        </Box>
+      </Box>
+    </Backdrop>
   );
 };
 
@@ -50,56 +67,78 @@ const InfoCard: React.FC<InfoCardType> = ({
   const { tab } = useSelector((state: IState) => state);
 
   return (
-    <>
-      <Card
-        onClick={() => {
-          if (details) setOpen(!open);
-        }}
+    <Grid item xs={12} sm={6} md={3} lg={2}>
+      {image && (
+        <img
+          style={{
+            cursor: 'pointer',
+            borderRadius: 20,
+            margin: 20,
+            width: '100%',
+            minWidth: 200,
+            marginLeft: 5,
+          }}
+          onClick={() => {
+            if (details) setOpen(!open);
+          }}
+          src={image}
+        />
+      )}
+      <Box
         sx={{
-          mb: 2,
-          mr: 2,
           display: 'flex',
+          flexDirection: 'column',
+          mb: 2,
           cursor: 'pointer',
+          mx: 2,
+        }}
+        onClick={() => {
+          if (details && !image) setOpen(!open);
         }}
       >
-        {image && <img src={image} />}
-        <Box>
-          <CardHeader title={name} />
-          <CardContent>
-            {description.map((el) => {
-              if (tab === 1)
-                el.value = new Date(Date.parse(el.value)).toLocaleDateString();
+        <Box
+          sx={{
+            pl: 1,
+          }}
+        >
+          <Typography variant='h5'>{name}</Typography>
+          {description.map((el) => {
+            if (tab === 1)
+              el.value = new Date(Date.parse(el.value)).toLocaleDateString();
 
-              return (
-                <Typography>
-                  {el.label}: {el.value}
-                </Typography>
-              );
-            })}
-          </CardContent>
+            return (
+              <Typography>
+                {el.label}: {el.value}
+              </Typography>
+            );
+          })}
         </Box>
-      </Card>
-      <CollapseDetails
-        open={open}
-        title={tab === 0 ? 'Episódios' : 'Personagens'}
-      >
-        {details.map((detail) => (
-          <>
-            <Typography>{detail.title}</Typography>
-            {detail.value.map((el: any) => (
-              <ListItem>
-                {tab === 0 && (
-                  <ListItemText>
-                    <b>{el.episode}</b> {el.name}
-                  </ListItemText>
-                )}
-                {tab === 1 && <ListItemText>{el.name}</ListItemText>}
-              </ListItem>
-            ))}
-          </>
-        ))}
-      </CollapseDetails>
-    </>
+      </Box>
+      {open && (
+        <ModalDetails
+          setOpen={setOpen}
+          open={open}
+          title={tab === 0 ? 'Episódios' : 'Personagens'}
+        >
+          {details.map((detail) => (
+            <>
+              {detail.value.map((el: any) => (
+                <>
+                  <ListItem>
+                    {tab === 0 && (
+                      <ListItemText>
+                        <b>{el.episode}</b> {el.name}
+                      </ListItemText>
+                    )}
+                    {tab === 1 && <ListItemText>{el.name}</ListItemText>}
+                  </ListItem>
+                </>
+              ))}
+            </>
+          ))}
+        </ModalDetails>
+      )}
+    </Grid>
   );
 };
 

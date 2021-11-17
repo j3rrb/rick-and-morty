@@ -1,9 +1,10 @@
 import { createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import { CharsCards, EpsCards } from '../types';
 
 export interface IState {
-  epsCards: any;
-  charsCards: any;
+  epsCards: EpsCards['episodes'];
+  charsCards: CharsCards['characters'];
   page: number;
   tab: number;
   loading: boolean;
@@ -11,8 +12,24 @@ export interface IState {
 }
 
 export const INITIAL_STATE: IState = {
-  epsCards: {},
-  charsCards: {},
+  epsCards: {
+    info: {
+      count: 1,
+      next: 2,
+      pages: 1,
+      prev: null,
+    },
+    results: [],
+  },
+  charsCards: {
+    info: {
+      count: 1,
+      next: 2,
+      pages: 1,
+      prev: null,
+    },
+    results: [],
+  },
   page: 1,
   tab: 0,
   loading: false,
