@@ -7,7 +7,7 @@ type Filter = {
 
 export const GET_ALL_CHARACTERS = (page?: number) => gql`
   query {
-    characters${page ? `${page}` : ""} {
+    characters${page ? `(page: ${page})` : ""} {
       info {
         count
         prev 
