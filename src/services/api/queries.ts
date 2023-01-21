@@ -1,13 +1,8 @@
 import { gql } from "@apollo/client";
 
-type Filter = {
-  page?: number;
-  name?: string;
-};
-
-export const GET_ALL_CHARACTERS = (page?: number) => gql`
-  query {
-    characters${page ? `(page: ${page})` : ""} {
+export const GET_ALL_CHARACTERS = gql(`
+  query GetCharacters($page: Int, $name: String) {
+    characters(page: $page, filter: { name: $name }) {
       info {
         count
         prev 
@@ -55,5 +50,4 @@ export const GET_ALL_CHARACTERS = (page?: number) => gql`
         created
       }
     }
-  }
-`;
+  }`);

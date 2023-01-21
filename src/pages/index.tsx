@@ -9,8 +9,9 @@ import {
   CardMedia,
   CircularProgress,
   Grid,
-  LinearProgress,
   Typography,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import Box from "@mui/material/Box";
@@ -19,19 +20,34 @@ import Image from "next/image";
 import { setLoading } from "@/redux/slices/app";
 
 export default function MainPage() {
+  let typeTimeout: NodeJS.Timeout;
   const dispatch = useDispatch();
   const scrollRef = React.useRef();
+  const [query, setQuery] = React.useState<string | null>(null);
   const [currPage, setCurrPage] = React.useState(1);
   const [prevPage, setPrevPage] = React.useState(0);
   const [charactersList, setCharactersList] = React.useState<Character[]>([]);
   const [wasLastList, setWasLastList] = React.useState(false);
-
   const [getAllCharacters, { data, loading, error }] = useLazyQuery(
-    GET_ALL_CHARACTERS(currPage)
+    GET_ALL_CHARACTERS,
+    {
+      variables: {
+        page: currPage,
+        name: query || undefined,
+      },
+    }
   );
 
+  const onChangeText = (query: string | null) => {
+    clearTimeout(typeTimeout);
+
+    typeTimeout = setTimeout(() => {
+      setQuery(query);
+    }, 400);
+  };
+
   const onScroll = () => {
-    if (scrollRef.current) {
+    if (scrollRef.current && data.characters.info.pages > 1) {
       const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
 
       if (scrollTop + clientHeight === scrollHeight) {
@@ -43,6 +59,15 @@ export default function MainPage() {
   React.useEffect(() => {
     getAllCharacters();
   }, []);
+
+  React.useEffect(() => {
+    setCurrPage(1);
+    setPrevPage(0);
+    setCharactersList([]);
+    setWasLastList(false);
+
+    getAllCharacters();
+  }, [query]);
 
   React.useEffect(() => {
     dispatch(setLoading(loading));
@@ -70,7 +95,13 @@ export default function MainPage() {
   return (
     <Box>
       <Box padding={2}>
-        <TextField fullWidth placeholder="Search character here..." />
+        <TextField
+          onChange={(e) => {
+            onChangeText(e.target.value || null);
+          }}
+          fullWidth
+          placeholder="Search character here..."
+        />
       </Box>
       <Box
         maxHeight="80vh"
@@ -111,7 +142,12 @@ export default function MainPage() {
                   />
                 </CardMedia>
                 <CardContent>
-                  <Typography variant="h5" textOverflow="ellipsis" noWrap>
+                  <Typography
+                    variant="h5"
+                    textOverflow="ellipsis"
+                    noWrap
+                    title={character.name}
+                  >
                     {character.name}
                   </Typography>
                   <Typography
@@ -153,6 +189,11 @@ export default function MainPage() {
           ))}
         </Grid>
       </Box>
+      <Snackbar open={!!error}>
+        <Alert severity="error" sx={{ width: "100%" }}>
+          {error?.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
